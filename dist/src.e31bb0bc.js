@@ -11001,16 +11001,12 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/_empty.js":[function(require,module,exports) {
-
-},{}],"index.js":[function(require,module,exports) {
+},{"./img\\close.svg":[["close.24fb46be.svg","img/close.svg"],"img/close.svg"],"./img\\play.svg":[["play.98209898.svg","img/play.svg"],"img/play.svg"],"./img\\pause.svg":[["pause.25265b4d.svg","img/pause.svg"],"img/pause.svg"],"_css_loader":"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _jquery = _interopRequireDefault(require("jquery"));
 
 require("./style.scss");
-
-var _module = require("module");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11068,25 +11064,25 @@ function () {
     value: function addVideo() {
       var _this2 = this;
 
-      console.log(this._videolist);
-      setTimeout(function () {
-        _this2._videolist.then(function (res) {
-          return res.forEach(function (vid) {
-            return _this2._wrapper.append(_this2.createVideoContainer(vid.src));
-          });
+      this._videolist.then(function (res) {
+        return res.forEach(function (vid) {
+          return _this2._wrapper.append(_this2.createVideoContainer(vid.src));
         });
-      }, 3000);
+      });
+
+      setTimeout(function () {
+        (0, _jquery.default)('.preloader').addClass('hide');
+      }, 2000);
     }
   }, {
     key: "addFullVid",
     value: function addFullVid(src) {
-      this._wrapper.append("<div class=\"fullvid\">                          \n                            <video class=\"full-video\" src=\"".concat(src, "\"></video>\n                          </div>"));
+      this._wrapper.append("<div class=\"fullvid\"><video class=\"full-video\" src=\"".concat(src, "\"></video></div>"));
 
       (0, _jquery.default)('.fullvid').append(this.addCloseVid()).append(this.addControls());
       (0, _jquery.default)('.full-video').on('timeupdate', function (e) {
         var progressBarPos = "".concat(e.target.currentTime / e.target.duration * 100, "%");
-        console.log(progressBarPos);
-        (0, _jquery.default)('.progressbar').css('width', progressBarPos);
+        (0, _jquery.default)('.progress').css('width', progressBarPos);
       });
     }
   }, {
@@ -11099,21 +11095,40 @@ function () {
   }, {
     key: "addControls",
     value: function addControls() {
-      return (0, _jquery.default)("<div class=\"controls\"></div>").append(this.addProgressBar()).append(this.addPlayPause());
+      return (0, _jquery.default)("<div class=\"controls\"></div>").append(this.addProgressBar()).append(this.addPlayPause()).append(this.addVolumeControl());
     }
   }, {
     key: "addProgressBar",
     value: function addProgressBar() {
-      return (0, _jquery.default)("<div class=\"progressbar\"></div>");
+      var _this3 = this;
+
+      return (0, _jquery.default)("<div class=\"progressbar\"><div class=\"progress\"></div></div>").on('click', function (e) {
+        return _this3.changeProgress(e);
+      });
     }
   }, {
     key: "addPlayPause",
     value: function addPlayPause() {
-      var _this3 = this;
+      var _this4 = this;
 
-      return (0, _jquery.default)("<button id=\"play-pause\"></button>").on('click', function () {
-        return _this3.togglePlayPause();
+      return (0, _jquery.default)("<div id=\"play-pause\"></div>").on('click', function () {
+        return _this4.togglePlayPause();
       });
+    }
+  }, {
+    key: "addVolumeControl",
+    value: function addVolumeControl() {
+      var _this5 = this;
+
+      return (0, _jquery.default)("<input type=\"range\" name=\"volume\" class=\"volumectrl\" min=\"0\" max=\"1\" step=\"0.05\">").on('change', function () {
+        return _this5.volumeChange();
+      });
+    }
+  }, {
+    key: "volumeChange",
+    value: function volumeChange() {
+      var volume = (0, _jquery.default)('.volumectrl').val();
+      (0, _jquery.default)('.full-video').get(0).volume = volume;
     }
   }, {
     key: "togglePlayPause",
@@ -11129,6 +11144,17 @@ function () {
         btn.className = "pause";
       }
     }
+  }, {
+    key: "changeProgress",
+    value: function changeProgress(e) {
+      var progressTime = e.offsetX / (0, _jquery.default)('.progressbar').get(0).offsetWidth * (0, _jquery.default)('.full-video').get(0).duration;
+      (0, _jquery.default)('.full-video').get(0).currentTime = progressTime;
+    }
+  }, {
+    key: "addPreloader",
+    value: function addPreloader() {
+      this._wrapper.append("<div class=\"preloader\">\n                            <div class=\"bar-wrap\">\n                              <div class=\"bar\"></div>\n                              <div class=\"bar reverse\"></div>\n                              <div class=\"bar\"></div>\n                            </div>\n                          </div>");
+    }
   }]);
 
   return View;
@@ -11137,8 +11163,9 @@ function () {
 var model = new Model();
 var view = new View(model);
 model.addVideoList();
+view.addPreloader();
 view.addVideo();
-},{"jquery":"../node_modules/jquery/dist/jquery.js","./style.scss":"style.scss","module":"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/_empty.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"jquery":"../node_modules/jquery/dist/jquery.js","./style.scss":"style.scss"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -11166,7 +11193,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63947" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56611" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -11341,5 +11368,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
+},{}]},{},["../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
 //# sourceMappingURL=/src.e31bb0bc.js.map

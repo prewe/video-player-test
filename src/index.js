@@ -1,13 +1,12 @@
 import $ from 'jquery';
 import './style.scss';
-import { builtinModules } from 'module';
+
 
 
 
 class Model {
   constructor() {
     this._videolist = this.addVideoList();
-    
   }
 
   addVideoList() {
@@ -31,22 +30,20 @@ class View {
   }
 
   addVideo() {
-    console.log(this._videolist);
+    this._videolist.then(res => res.forEach(vid => this._wrapper.append(this.createVideoContainer(vid.src))));
+
     setTimeout(() => {
-      this._videolist.then(res => res.forEach(vid => this._wrapper.append(this.createVideoContainer(vid.src))));
-    }, 3000)
+      $('.preloader').addClass('hide');
+    }, 2000);
   }
 
   addFullVid(src) {
-    this._wrapper.append(`<div class="fullvid">                          
-                            <video class="full-video" src="${src}"></video>
-                          </div>`);
+    this._wrapper.append(`<div class="fullvid"><video class="full-video" src="${src}"></video></div>`)               
     $('.fullvid').append(this.addCloseVid())
                   .append(this.addControls());
     $('.full-video').on('timeupdate', (e) => {
       let progressBarPos = `${e.target.currentTime / e.target.duration * 100}%`;
-      console.log(progressBarPos);
-      $('.progressbar').css('width', progressBarPos);
+      $('.progress').css('width', progressBarPos);
     });
   }
 
@@ -56,15 +53,25 @@ class View {
 
   addControls() {
     return $(`<div class="controls"></div>`).append(this.addProgressBar())
-                                            .append(this.addPlayPause());
+                                            .append(this.addPlayPause())
+                                            .append(this.addVolumeControl());
   }
 
   addProgressBar() {
-    return $(`<div class="progressbar"></div>`);
+    return $(`<div class="progressbar"><div class="progress"></div></div>`).on('click', (e) => this.changeProgress(e));                                                                   
   }
 
   addPlayPause() {
-    return $(`<button id="play-pause"></button>`).on('click', () => this.togglePlayPause());
+    return $(`<div id="play-pause"></div>`).on('click', () => this.togglePlayPause());
+  }
+
+  addVolumeControl() {
+    return $(`<input type="range" name="volume" class="volumectrl" min="0" max="1" step="0.05">`).on('change', () => this.volumeChange());
+  }
+
+  volumeChange() {
+    const volume = $('.volumectrl').val();
+    $('.full-video').get(0).volume = volume;
   }
 
   togglePlayPause() {
@@ -79,14 +86,29 @@ class View {
     }
   }
 
-  
+  changeProgress(e) {
+    const progressTime = (e.offsetX / $('.progressbar').get(0).offsetWidth) * $('.full-video').get(0).duration;
+    $('.full-video').get(0).currentTime = progressTime;
+  }
+
+  addPreloader() {
+    this._wrapper.append(`<div class="preloader">
+                            <div class="bar-wrap">
+                              <div class="bar"></div>
+                              <div class="bar reverse"></div>
+                              <div class="bar"></div>
+                            </div>
+                          </div>`);
+  }
+
 }
 
 
-  const model = new Model;
-  const view = new View(model);
-  model.addVideoList();
-  view.addVideo();
+const model = new Model;
+const view = new View(model);
+model.addVideoList();
+view.addPreloader();
+view.addVideo();
 
 
 
