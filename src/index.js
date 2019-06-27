@@ -34,7 +34,7 @@ class View {
 
     setTimeout(() => {
       $('.preloader').addClass('hide');
-    }, 2000);
+    }, 3000);
   }
 
   addFullVid(src) {
